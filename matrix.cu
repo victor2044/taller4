@@ -50,9 +50,11 @@ int main(int argc, char const *argv[])
     cudaMallocHost((void **) &h_cc, sizeof(int)*columnasMatrizA*columnasMatrizB);
 
     // Rellenando Matriz A y Matriz B
-    for (int i = 0; i < 16; ++i) {
-            h_a[i] = rand() % 1024;
-            h_b[i] = rand() % 1024;
+    for (int i = 0; i < columnasMatrizA; ++i) {
+        for (int j = 0; j < filasMatrizB; ++j) {
+            h_a[i* filasMatrizB+ j] = rand() % 1024;
+            h_b[i* filasMatrizB+ j] = rand() % 1024;
+        }
     }
 
     float tiempoGPU, tiempoCPU;
