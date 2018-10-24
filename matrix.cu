@@ -39,7 +39,8 @@ int main(int argc, char const *argv[])
 {
     int columnasMatrizA = 4, filasMatrizB = 4, columnasMatrizB = 4; 
     /* Fixed seed for illustration */
-    srand(123456987);
+    int n = srand(123456987);
+    int k = srand(123456987);
 
     // allocate memory in host RAM, h_cc is used to store CPU result
     int *h_a, *h_b, *h_c, *h_cc;
