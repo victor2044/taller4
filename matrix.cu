@@ -39,8 +39,8 @@ int main(int argc, char const *argv[])
 {
     int columnasMatrizA = 4, filasMatrizB = 4, columnasMatrizB = 4; 
     /* Fixed seed for illustration */
-    int n = srand(123456987);
-    int k = srand(123456987);
+    srand(123456987);
+    
 
     // allocate memory in host RAM, h_cc is used to store CPU result
     int *h_a, *h_b, *h_c, *h_cc;
@@ -50,11 +50,9 @@ int main(int argc, char const *argv[])
     cudaMallocHost((void **) &h_cc, sizeof(int)*columnasMatrizA*columnasMatrizB);
 
     // Rellenando Matriz A y Matriz B
-    for (int i = 0; i < columnasMatrizA; ++i) {
-        for (int j = 0; j < filasMatrizB; ++j) {
-            h_a[i * n + j] = rand() % 1024;
-            h_b[i * k + j] = rand() % 1024;
-        }
+    for (int i = 0; i < 16; ++i) {
+            h_a[i] = rand() % 1024;
+            h_b[i] = rand() % 1024;
     }
 
     float tiempoGPU, tiempoCPU;
