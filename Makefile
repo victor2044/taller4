@@ -1,6 +1,6 @@
 NVCC = nvcc
 
-all: vecadd
+all: matrix
 
 %.o : %.cu
 	$(NVCC) -c $< -o $@
@@ -9,4 +9,4 @@ vecadd : vecadd.o
 	$(NVCC) $^ -o $@
 
 clean:
-	rm -rf *.o *.a vecadd
+	rm -rf *.o *.a matrix
