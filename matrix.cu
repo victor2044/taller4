@@ -44,10 +44,10 @@ int main(int argc, char const *argv[])
 
     // allocate memory in host RAM, h_cc is used to store CPU result
     int *h_a, *h_b, *h_c, *h_cc;
-    cudaMallocHost((void **) &h_a, sizeof(int)*columnasMatrizA*filasMatrizB);
-    cudaMallocHost((void **) &h_b, sizeof(int)*filasMatrizB*columnasMatrizB);
-    cudaMallocHost((void **) &h_c, sizeof(int)*columnasMatrizA*columnasMatrizB);
-    cudaMallocHost((void **) &h_cc, sizeof(int)*columnasMatrizA*columnasMatrizB);
+    cudaMalloc((void **) &h_a, sizeof(int)*columnasMatrizA*filasMatrizB);
+    cudaMalloc((void **) &h_b, sizeof(int)*filasMatrizB*columnasMatrizB);
+    cudaMalloc((void **) &h_c, sizeof(int)*columnasMatrizA*columnasMatrizB);
+    cudaMalloc((void **) &h_cc, sizeof(int)*columnasMatrizA*columnasMatrizB);
 
     // Rellenando Matriz A y Matriz B
     for (int i = 0; i < columnasMatrizA; ++i) {
@@ -57,13 +57,7 @@ int main(int argc, char const *argv[])
         }
     }
 
-    float tiempoGPU, tiempoCPU;
-    cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
-
-    // Inicializa tiempo para GPU
-    cudaEventRecord(start, 0);
+    double tiempoGPU, tiempoCPU;
 
     int *d_a, *d_b, *d_c;
     cudaMalloc((void **) &d_a, sizeof(int)*columnasMatrizA*filasMatrizB);
@@ -77,28 +71,22 @@ int main(int argc, char const *argv[])
     unsigned int grid_cols = (columnasMatrizB + BLOCK_SIZE - 1) / BLOCK_SIZE;
     dim3 dimGrid(grid_cols, grid_rows);
     dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
-
+    clock_t start_d=clock();
     matrixGPU<<<dimGrid, dimBlock>>>(d_a, d_b, d_c, columnasMatrizA, filasMatrizB, columnasMatrizB);    
 
+    cudaThreadSynchronize();
+    clock_t end_d = clock();
 
     cudaMemcpy(h_c, d_c, sizeof(int)*columnasMatrizA*columnasMatrizB, cudaMemcpyDeviceToHost);
-    cudaThreadSynchronize();
-
-    cudaEventRecord(stop, 0);
-    cudaEventSynchronize(stop);
-
     // calcula tiempo de ejecucion del GPU
-    cudaEventElapsedTime(&tiempoGPU, start, stop);
+    tiempoGPU = (double)(end_d-start_d)/CLOCKS_PER_SEC;
     printf("GPU time: %f ms.\n\n", tiempoGPU);
 
     // Inicializa tiempo de ejecucion del CPU
-    cudaEventRecord(start, 0);
-
+    clock_t start_h=clock();
     matrixCPU(h_a, h_b, h_cc, columnasMatrizA, filasMatrizB,columnasMatrizB);
-
-    cudaEventRecord(stop, 0);
-    cudaEventSynchronize(stop);
-    cudaEventElapsedTime(&tiempoCPU, start, stop);
+    clock_t end_h = clock();
+    tiempoCPU = (double)(end_h-start_h)/CLOCKS_PER_SEC;
     printf("CPU time: %f ms.\n\n", tiempoCPU);
 
     // free memory
