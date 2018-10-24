@@ -5,7 +5,7 @@ all: matrix
 %.o : %.cu
 	$(NVCC) -c $< -o $@
 
-vecadd : vecadd.o
+vecadd : matrix.o
 	$(NVCC) $^ -o $@
 
 clean:
